@@ -8,8 +8,14 @@
   <h1>Game Calculator</h1>
   <label>Item:
     <select id="item">
-      <option value="sword">Sword</option>
-      <option value="shield">Shield</option>
+      <option value="raccoon">Raccoon</option>
+      <option value="dragonfly">Dragon Fly</option>
+      <option value="discobee">Disco Bee</option>
+      <option value="kitsune">Kitsune</option>
+      <option value="corruptedkitsune">Corrupted Kitsune</option>
+      <option value="queenbee">Queen Bee</option>
+      <option value="redfox">Red Fox</option>
+      <option value="mimicoctopus">Mimic Octopus</option>
     </select>
   </label>
 
@@ -22,14 +28,42 @@
   <p id="output"></p>
 
   <script>
-    const prices = { sword: 100, shield: 150 };
+    // Prices stored as numbers in quadrillions or trillions sheckles
+    const prices = {
+      raccoon: 8_000_000_000_000_000,           // 8 Quadrillion
+      dragonfly: 3_000_000_000_000_000,         // 3 Quadrillion
+      discobee: 7_800_000_000_000_000,          // 7.8 Quadrillion
+      kitsune: 17_500_000_000_000_000,          // 17.5 Quadrillion
+      corruptedkitsune: 1_000_000_000_000_000,  // 1 Quadrillion
+      queenbee: 1_000_000_000_000_000,          // 1 Quadrillion
+      redfox: 500_000_000_000_000,               // 500 Trillion
+      mimicoctopus: 3_000_000_000_000_000       // 3 Quadrillion
+    };
+
+    // Helper to format big numbers with commas
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Helper to get units based on size
+    function formatCost(num) {
+      if (num >= 1_000_000_000_000_000) { // quadrillion+
+        return (num / 1_000_000_000_000_000).toLocaleString(undefined, {maximumFractionDigits:2}) + " Quadrillion sheckles";
+      } else if (num >= 1_000_000_000_000) { // trillion+
+        return (num / 1_000_000_000_000).toLocaleString(undefined, {maximumFractionDigits:2}) + " Trillion sheckles";
+      }
+      return formatNumber(num) + " sheckles";
+    }
 
     function calculate() {
       const item = document.getElementById("item").value;
-      const qty = parseInt(document.getElementById("quantity").value);
-      const cost = prices[item] * qty;
-      document.getElementById("output").innerText = `Total cost: ${cost} gold`;
+      const qty = parseInt(document.getElementById("quantity").value) || 0;
+      const costPerItem = prices[item];
+      const totalCost = costPerItem * qty;
+
+      document.getElementById("output").innerText = `Total cost: ${formatCost(totalCost)}`;
     }
   </script>
 </body>
 </html>
+
