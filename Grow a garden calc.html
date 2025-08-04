@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Game Item Calculator</title>
+</head>
+<body>
+  <h1>Game Calculator</h1>
+  <label>Item:
+    <select id="item">
+      <option value="sword">Sword</option>
+      <option value="shield">Shield</option>
+    </select>
+  </label>
+
+  <label>Quantity:
+    <input type="number" id="quantity" value="1" min="1" />
+  </label>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <p id="output"></p>
+
+  <script>
+    const prices = { sword: 100, shield: 150 };
+
+    function calculate() {
+      const item = document.getElementById("item").value;
+      const qty = parseInt(document.getElementById("quantity").value);
+      const cost = prices[item] * qty;
+      document.getElementById("output").innerText = `Total cost: ${cost} gold`;
+    }
+  </script>
+</body>
+</html>
