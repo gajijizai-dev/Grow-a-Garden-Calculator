@@ -2,68 +2,158 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Game Item Calculator</title>
+  <title>Item Value Comparator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .container {
+      display: flex;
+      gap: 2rem;
+    }
+    .box {
+      flex: 1;
+      border: 2px solid #ccc;
+      padding: 1rem;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.25rem;
+    }
+    select {
+      width: 100%;
+      padding: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+    button {
+      display: block;
+      margin: 2rem auto 1rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+    #output {
+      font-size: 1.1rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
-  <h1>Game Calculator</h1>
-  <label>Item:
-    <select id="item">
-      <option value="raccoon">Raccoon</option>
-      <option value="dragonfly">Dragon Fly</option>
-      <option value="discobee">Disco Bee</option>
-      <option value="kitsune">Kitsune</option>
-      <option value="corruptedkitsune">Corrupted Kitsune</option>
-      <option value="queenbee">Queen Bee</option>
-      <option value="redfox">Red Fox</option>
-      <option value="mimicoctopus">Mimic Octopus</option>
-    </select>
-  </label>
+  <h1 style="text-align:center;">Item Value Comparator</h1>
+  <div class="container">
+    <div class="box" id="box1">
+      <h2>Box 1</h2>
+      <!-- 10 dropdowns for Box 1 -->
+    </div>
 
-  <label>Quantity:
-    <input type="number" id="quantity" value="1" min="1" />
-  </label>
+    <div class="box" id="box2">
+      <h2>Box 2</h2>
+      <!-- 10 dropdowns for Box 2 -->
+    </div>
+  </div>
 
-  <button onclick="calculate()">Calculate</button>
+  <button onclick="compare()">Compare Totals</button>
 
-  <p id="output"></p>
+  <div id="output"></div>
 
   <script>
-    // Prices stored as numbers in quadrillions or trillions sheckles
-    const prices = {
-      raccoon: 8_000_000_000_000_000,           // 8 Quadrillion
-      dragonfly: 3_000_000_000_000_000,         // 3 Quadrillion
-      discobee: 7_800_000_000_000_000,          // 7.8 Quadrillion
-      kitsune: 17_500_000_000_000_000,          // 17.5 Quadrillion
-      corruptedkitsune: 1_000_000_000_000_000,  // 1 Quadrillion
-      queenbee: 1_000_000_000_000_000,          // 1 Quadrillion
-      redfox: 500_000_000_000_000,               // 500 Trillion
-      mimicoctopus: 3_000_000_000_000_000       // 3 Quadrillion
+    const items = {
+      raccoon: 8_000_000_000_000_000,
+      dragonfly: 3_000_000_000_000_000,
+      discobee: 7_800_000_000_000_000,
+      kitsune: 17_500_000_000_000_000,
+      corruptedkitsune: 1_000_000_000_000_000,
+      queenbee: 1_000_000_000_000_000,
+      redfox: 500_000_000_000_000,
+      mimicoctopus: 3_000_000_000_000_000
     };
 
-    // Helper to format big numbers with commas
-    function formatNumber(num) {
-      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
+    const itemNames = {
+      raccoon: "Raccoon",
+      dragonfly: "Dragon Fly",
+      discobee: "Disco Bee",
+      kitsune: "Kitsune",
+      corruptedkitsune: "Corrupted Kitsune",
+      queenbee: "Queen Bee",
+      redfox: "Red Fox",
+      mimicoctopus: "Mimic Octopus"
+    };
 
-    // Helper to get units based on size
-    function formatCost(num) {
-      if (num >= 1_000_000_000_000_000) { // quadrillion+
-        return (num / 1_000_000_000_000_000).toLocaleString(undefined, {maximumFractionDigits:2}) + " Quadrillion sheckles";
-      } else if (num >= 1_000_000_000_000) { // trillion+
-        return (num / 1_000_000_000_000).toLocaleString(undefined, {maximumFractionDigits:2}) + " Trillion sheckles";
+    // Create 10 dropdowns in each box
+    function generateDropdowns(containerId) {
+      const container = document.getElementById(containerId);
+      for (let i = 0; i < 10; i++) {
+        const label = document.createElement("label");
+        label.textContent = `Item ${i + 1}`;
+        const select = document.createElement("select");
+        select.name = `${containerId}_item${i}`;
+        const emptyOption = document.createElement("option");
+        emptyOption.value = "";
+        emptyOption.textContent = "-- Select an item --";
+        select.appendChild(emptyOption);
+
+        for (let key in items) {
+          const option = document.createElement("option");
+          option.value = key;
+          option.textContent = `${itemNames[key]} (${formatCost(items[key])})`;
+          select.appendChild(option);
+        }
+
+        container.appendChild(label);
+        container.appendChild(select);
       }
-      return formatNumber(num) + " sheckles";
     }
 
-    function calculate() {
-      const item = document.getElementById("item").value;
-      const qty = parseInt(document.getElementById("quantity").value) || 0;
-      const costPerItem = prices[item];
-      const totalCost = costPerItem * qty;
-
-      document.getElementById("output").innerText = `Total cost: ${formatCost(totalCost)}`;
+    // Format large numbers
+    function formatCost(num) {
+      if (num >= 1e15) return (num / 1e15).toLocaleString(undefined, {maximumFractionDigits:2}) + " Quadrillion sheckles";
+      if (num >= 1e12) return (num / 1e12).toLocaleString(undefined, {maximumFractionDigits:2}) + " Trillion sheckles";
+      return num.toLocaleString() + " sheckles";
     }
+
+    // Calculate total value for a box
+    function calculateBoxTotal(containerId) {
+      const container = document.getElementById(containerId);
+      let total = 0;
+      const selects = container.querySelectorAll("select");
+      selects.forEach(select => {
+        const value = select.value;
+        if (items[value]) {
+          total += items[value];
+        }
+      });
+      return total;
+    }
+
+    // Compare both boxes
+    function compare() {
+      const total1 = calculateBoxTotal("box1");
+      const total2 = calculateBoxTotal("box2");
+
+      let result = `
+        <strong>Total for Box 1:</strong> ${formatCost(total1)}<br/>
+        <strong>Total for Box 2:</strong> ${formatCost(total2)}<br/><br/>
+      `;
+
+      if (total1 > total2) {
+        result += "👉 <strong>Box 1 is more valuable!</strong>";
+      } else if (total2 > total1) {
+        result += "👉 <strong>Box 2 is more valuable!</strong>";
+      } else {
+        result += "🤝 <strong>Both boxes are equally valuable!</strong>";
+      }
+
+      document.getElementById("output").innerHTML = result;
+    }
+
+    // Initialize
+    generateDropdowns("box1");
+    generateDropdowns("box2");
   </script>
 </body>
 </html>
-
